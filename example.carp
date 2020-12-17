@@ -1,0 +1,7 @@
+(load "./unwrap-expect.carp")
+
+(use Array)
+
+(defn main []
+ (println* (+ 34
+              (expect "Couldn't find an odd number" (find &(fn [x] (Int.odd? @x)) &[2 4])))))

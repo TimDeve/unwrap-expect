@@ -1,0 +1,47 @@
+(definterface expect-interface (Fn [&String &String a] b))
+
+(sig expect-maybe (Fn [&String &String (Maybe a)] a))
+(defn expect-maybe [ctx message maybe]
+  (match maybe
+   (Maybe.Just val) val
+   Maybe.Nothing
+   (do
+      (IO.print ctx)
+      (IO.println message)
+      (System.abort)
+      (bottom))))
+(implements expect-interface expect-maybe)
+
+(sig expect-result (Fn [&String &String (Result a b)] a))
+(defn expect-result [ctx message result]
+  (match result
+   (Result.Success val) val
+   (Result.Error _)
+   (do
+      (IO.print ctx)
+      (IO.println message)
+      (System.abort)
+      (bottom))))
+(implements expect-interface expect-result)
+
+(defmacro expect [msg val]
+  (let [ctx (String.concat
+              (array (eval (list 'file val))
+                     ":"
+                     (str (eval (list 'line val)))
+                     ":"
+                     (str (eval (list 'column val)))
+                     ": "))]
+    (list 'expect-interface ctx msg val)))
+
+(defmacro unwrap [val]
+  (let [ctx (String.concat
+              (array (eval (list 'file val))
+                     ":"
+                     (str (eval (list 'line val)))
+                     ":"
+                     (str (eval (list 'column val)))
+                     ": "))]
+    (list 'expect-interface ctx "Unwrapping value failed" val)))
+
+
