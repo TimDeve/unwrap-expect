@@ -1,7 +1,12 @@
 (load "./unwrap-expect.carp")
 
-(use Array)
+(defn remote-call []
+ (the (Result String String) (Result.Success @"Some data")))
 
-(defn main []
- (println* (+ 34
-              (expect "Couldn't find an odd number" (find &(fn [x] (Int.odd? @x)) &[2 4])))))
+(defn-do main []
+  (println* (runwrap (remote-call)))
+  (println* (rexpect "Remote call failed" (remote-call)))
+
+  (println* (munwrap (Maybe.Just @"Something")))
+  (println* (mexpect "Couldn't find an odd number"
+                     (Array.find &(fn [x] (Int.odd? @x)) &[2 4]))))

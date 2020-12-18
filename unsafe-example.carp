@@ -1,0 +1,9 @@
+(load "./unsafe-unwrap-expect.carp")
+
+(use Array)
+
+(defn main []
+ (println* (Int.+ (unwrap (the (Result Int Int) (Result.Success 42)))
+                  (expect "Couldn't find an odd number"
+                          (Array.find &(fn [x] (Int.odd? @x)) &[2 4])))))
+
